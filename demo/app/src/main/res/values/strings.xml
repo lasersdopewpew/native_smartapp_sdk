@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">StarSDK External Developer Demo</string>
+
+    <string name="asistant_tab">ASSISTANT</string>
+    <string name="cv_tab">COMPUTER VISION</string>
+    <string name="asistant_description"><![CDATA[
+<p>Это демо смартапп, который умеет взаимодействовать<br/>с виртуальным персонажем — андроидом.</p>
+<p>Персонаж умеет надевать предметы одежды. Например, попробуйте сказать:<br/></p>
+
+<h3>— Надень перчатки</h3>
+<h3>— Надень ботинки</h3>
+
+Также он умеет сообщать, что на него надето.<br/>
+Спросите, например:
+
+<h3>— Что надето?</h3>
+Некоторые предметы платные. Чтобы купить их, скажите:<br/>
+<h3>— Купи слона</h3>
+<p>После этой фразы появится экран для совершения тестового платежа.</p>
+<p>При успешном завершении с карты спишется один рубль, который потом вернётся обратно.</p>]]></string>
+
+    <!-- Computer Vision -->
+    <string name="track_mirror">Track mirror</string>
+    <string name="track_face_bounding_box">Track face bounding box </string>
+    <string name="track_face_landmarks">Track face landmarks </string>
+    <string name="track_body_bounding_box">Track body bounding box </string>
+    <string name="track_body_landmarks_homa_net">Track body landmarks HomaNet </string>
+    <string name="track_body_landmarks_sental_net">Track body landmarks SentalNet </string>
+    <string name="track_body_segmentation">Track body segmentation </string>
+    <string name="track_gestures">Track gestures </string>
+
+</resources>

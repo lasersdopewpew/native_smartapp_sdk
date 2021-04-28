@@ -1,0 +1,70 @@
+plugins {
+    id 'java-library'
+    id 'kotlin'
+    id 'maven-publish'
+}
+
+dependencies {
+    implementation "androidx.core:core-ktx:$versions.androidx.core"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.kotlinxCoroutines"
+}
+
+task sourceJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allSource
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    archiveClassifier.set('javadoc')
+}
+
+afterEvaluate {
+    publishing {
+        repositories.add(rootProject.repositories.getByName('OSSRH'))
+
+        publications {
+            mavenMicCameraStateApi(MavenPublication) {
+                from components.java
+
+                artifact sourceJar
+                artifact javadocJar
+
+                groupId publication.pomGroupID+'.mic_camera_state'
+                artifactId "api"
+                version publication.pomMicCameraStateVersion
+
+                pom {
+                    name = 'mic_camera_state'
+                    description = 'mic-camera-state is utility library for getting microphone and camera state'
+                    url = publication.githubUrl
+                    licenses {
+                        license {
+                            name = publication.licenseName
+                            url = publication.licenseUrl
+                        }
+                    }
+                    developers {
+                        developer {
+                            name = 'Igor Perminov'
+                            email = 'Perminov.I.Yurye@sberbank.ru'
+                        }
+                        developer {
+                            name = 'Nikolay Pahomov'
+                            email = 'NMPakhomov@sberbank.ru'
+                        }
+                    }
+                    scm {
+                        connection = publication.connectionUrl
+                        developerConnection = publication.developerConnection
+                        url = publication.githubUrl
+                    }
+                }
+            }
+        }
+    }
+
+    signing {
+        sign publishing.publications.mavenMicCameraStateApi
+    }
+}
