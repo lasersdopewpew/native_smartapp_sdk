@@ -1,0 +1,76 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'maven-publish'
+}
+
+android {
+    compileSdkVersion versions.compileSdk
+    buildToolsVersion versions.buildTools
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 29
+
+        buildConfigField 'String', 'CV_API_VERSION', "\"3.0.0\""
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation project(':public:cv:proto')
+    implementation project(':public:cv:util')
+
+    implementation "androidx.annotation:annotation:$versions.annotation"
+}
+
+afterEvaluate {
+    publishing {
+        repositories.add(rootProject.repositories.getByName('OSSRH'))
+
+        publications {
+            mavenCvEntity(MavenPublication) {
+                from components.release
+
+                groupId = publication.pomGroupID + '.cv'
+                artifactId = "entity"
+                version = publication.pomCvLibVersion
+
+                pom {
+                    name = "cv:entity"
+                    description = 'entities used in computer vision api'
+                    url = publication.githubUrl
+                    licenses {
+                        license {
+                            name = publication.licenseName
+                            url = publication.licenseUrl
+                        }
+                    }
+                    developers {
+                        developer {
+                            name = 'Dmitry Levshunov'
+                            email = 'Levshunov.D.A@sberbank.ru'
+                        }
+                        developer {
+                            name = 'Irina Karpenko'
+                            email = 'IViKarpenko@sberbank.ru'
+                        }
+                    }
+                    scm {
+                        connection = publication.connectionUrl
+                        developerConnection = publication.connectionUrl
+                        url = publication.githubUrl
+                    }
+                }
+            }
+        }
+    }
+
+    signing {
+        sign publishing.publications.mavenCvEntity
+    }
+}

@@ -1,49 +1,41 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
-
-android {
-    compileSdkVersion 29
-    buildToolsVersion  "29.0.2"
-
-    buildTypes {
-        debug {
-            minifyEnabled false
-            useProguard false
-        }
-    }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-    kotlinOptions {
-        jvmTarget = '1.8'
-    }
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'maven-publish'
 }
 
 dependencies {
-    implementation 'androidx.core:core:1.3.2'
+    implementation "androidx.core:core-ktx:$versions.androidx.core"
+}
+
+task androidSourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
+    from android.sourceSets.main.kotlin.srcDirs
 }
 
 afterEvaluate {
     publishing {
-        publications {
-            mavenJava(MavenPublication) {
-                from components.debug
+        repositories.add(rootProject.repositories.getByName('OSSRH'))
 
-                groupId rootProject.ext.pomGroupID
+        publications {
+            mavenJavaAsserts(MavenPublication) {
+                from components.release
+
+                artifact androidSourcesJar
+
+                groupId publication.pomGroupID
                 artifactId project.name
-                version rootProject.ext.pomVersion
+                version publication.pomCommonLibsVersion
 
                 pom {
                     name = 'asserts'
                     description = 'asserts is utility library containing some userful asserts'
-                    url = 'https://github.com/sberdevices/native_smartapp_sdk'
+                    url = publication.githubUrl
                     licenses {
                         license {
-                            name = 'Sber Public License at-nc-sa v.2'
-                            url = 'https://github.com/sberdevices/salutejs/blob/master/LICENSE.txt'
+                            name = publication.licenseName
+                            url = publication.licenseUrl
                         }
                     }
                     developers {
@@ -57,24 +49,16 @@ afterEvaluate {
                         }
                     }
                     scm {
-                        connection = 'scm:git:git://github.com/sberdevices/native_smartapp_sdk.git'
-                        developerConnection = 'scm:git:ssh://github.com:sberdevices/native_smartapp_sdk.git'
-                        url = 'https://github.com/sberdevices/native_smartapp_sdk'
-                    }
-                }
-
-                versionMapping {
-                    allVariants {
-                        fromResolutionResult()
+                        connection = publication.connectionUrl
+                        developerConnection = publication.developerConnection
+                        url = publication.githubUrl
                     }
                 }
             }
         }
     }
-}
 
-afterEvaluate {
     signing {
-        sign publishing.publications.mavenJava
+        sign publishing.publications.mavenJavaAsserts
     }
 }

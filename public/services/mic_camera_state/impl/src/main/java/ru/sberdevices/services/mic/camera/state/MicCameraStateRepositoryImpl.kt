@@ -8,19 +8,19 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
-import ru.sberdevices.common.binderhelper.BinderHelper2
-import ru.sberdevices.common.binderhelper.BinderHelper2Factory
+import ru.sberdevices.common.binderhelper.BinderHelper
+import ru.sberdevices.common.binderhelper.BinderHelperFactory
 import ru.sberdevices.common.logger.Logger
 import ru.sberdevices.services.mic.camera.state.aidl.IMicCameraStateService
 import ru.sberdevices.services.mic.camera.state.aidl.IOnMicCameraStateChangedListener
 
-private val BIND_INTENT = BinderHelper2.createBindIntent(
+private val BIND_INTENT = BinderHelper.createBindIntent(
     packageName = "ru.sberdevices.services",
     className = "ru.sberdevices.services.mic.camera.state.MicCameraStateService"
 )
 
 /**
- * Имплементация [MicCameraStateRepository].
+ * Implementation [MicCameraStateRepository].
  */
 internal class MicCameraStateRepositoryImpl(
     private val context: Context,
@@ -54,7 +54,7 @@ internal class MicCameraStateRepositoryImpl(
         }
     }
     private val helper =
-        BinderHelper2Factory.getBinderHelper2(context, BIND_INTENT) { IMicCameraStateService.Stub.asInterface(it) }
+        BinderHelperFactory(context, BIND_INTENT) { IMicCameraStateService.Stub.asInterface(it) }.create()
 
     init {
         helper.connect()

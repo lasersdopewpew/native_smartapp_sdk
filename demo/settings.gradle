@@ -1,0 +1,5 @@
+rootProject.name = "sberdevices-services-demo"
+include ':app'
+
+
+

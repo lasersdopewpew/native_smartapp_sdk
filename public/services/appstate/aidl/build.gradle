@@ -1,17 +1,51 @@
-apply plugin: 'com.android.library'
+plugins {
+    id 'com.android.library'
+    id 'maven-publish'
+}
 
-android {
-    compileSdkVersion 29
-    buildToolsVersion  "29.0.2"
+afterEvaluate {
+    publishing {
+        repositories.add(rootProject.repositories.getByName('OSSRH'))
 
-    buildTypes {
-        debug {
-            minifyEnabled false
-            useProguard false
+        publications {
+            mavenAppstate(MavenPublication) {
+                from components.release
+
+                groupId publication.pomGroupID + '.appstate'
+                artifactId "aidl"
+                version publication.pomAppStateVersion
+
+                pom {
+                    name = "appstate:aidl"
+                    description = 'appstate is a library used to transmit native app state to smartapp backend'
+                    url = publication.githubUrl
+                    licenses {
+                        license {
+                            name = publication.licenseName
+                            url = publication.licenseUrl
+                        }
+                    }
+                    developers {
+                        developer {
+                            name = 'Igor Perminov'
+                            email = 'Perminov.I.Yurye@sberbank.ru'
+                        }
+                        developer {
+                            name = 'Nikolay Pahomov'
+                            email = 'NMPakhomov@sberbank.ru'
+                        }
+                    }
+                    scm {
+                        connection = publication.connectionUrl
+                        developerConnection = publication.connectionUrl
+                        url = publication.githubUrl
+                    }
+                }
+            }
         }
     }
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+
+    signing {
+        sign publishing.publications.mavenAppstate
     }
 }

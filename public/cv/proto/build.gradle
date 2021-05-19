@@ -1,0 +1,105 @@
+plugins {
+    id 'com.android.library'
+    id 'com.google.protobuf'
+    id 'kotlin-android'
+    id 'maven-publish'
+}
+
+android {
+    compileSdkVersion versions.compileSdk
+    buildToolsVersion versions.buildTools
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 29
+
+        buildConfigField 'String', 'CV_API_VERSION', "\"3.0.0\""
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    sourceSets {
+        main {
+            proto {
+                srcDir 'src/main/proto'
+            }
+        }
+    }
+}
+
+protobuf {
+    protoc {
+        artifact = "com.google.protobuf:protoc:3.0.0"
+    }
+    plugins {
+        javalite {
+            artifact = "com.google.protobuf:protoc-gen-javalite:3.0.0"
+        }
+    }
+    generateProtoTasks {
+        all().each { task ->
+
+            task.builtins {
+                remove java
+            }
+            task.plugins {
+                javalite {}
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation "androidx.annotation:annotation:$versions.annotation"
+    api "com.google.protobuf:protobuf-lite:3.0.1"
+}
+
+afterEvaluate {
+    publishing {
+        repositories.add(rootProject.repositories.getByName('OSSRH'))
+
+        publications {
+            mavenCvProto(MavenPublication) {
+                from components.release
+
+                groupId = publication.pomGroupID + '.cv'
+                artifactId = "proto"
+                version = publication.pomCvLibVersion
+
+                pom {
+                    name = "cv:proto"
+                    description = 'protos used for parcelling of entities'
+                    url = publication.githubUrl
+                    licenses {
+                        license {
+                            name = publication.licenseName
+                            url = publication.licenseUrl
+                        }
+                    }
+                    developers {
+                        developer {
+                            name = 'Dmitry Levshunov'
+                            email = 'Levshunov.D.A@sberbank.ru'
+                        }
+                        developer {
+                            name = 'Irina Karpenko'
+                            email = 'IViKarpenko@sberbank.ru'
+                        }
+                    }
+                    scm {
+                        connection = publication.connectionUrl
+                        developerConnection = publication.connectionUrl
+                        url = publication.githubUrl
+                    }
+                }
+            }
+        }
+    }
+
+    signing {
+        sign publishing.publications.mavenCvProto
+    }
+}

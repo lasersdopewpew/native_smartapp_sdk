@@ -1,1 +1,72 @@
-apply plugin: 'java-library'
+plugins {
+    id 'java-library'
+    id 'kotlin'
+    id 'maven-publish'
+    id "org.jetbrains.dokka" version "1.4.32"
+}
+
+dependencies {
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$versions.kotlin"
+    implementation "androidx.core:core-ktx:$versions.androidx.core"
+}
+
+task sourceJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allSource
+}
+
+task packageJavadoc(type: Jar) {
+    dependsOn(dokkaHtml)
+    archiveClassifier.set('javadoc')
+    from(dokkaHtml.outputDirectory)
+}
+
+afterEvaluate {
+    publishing {
+        repositories.add(rootProject.repositories.getByName('OSSRH'))
+
+        publications {
+            mavenMesagingApi(MavenPublication) {
+                from components.java
+
+                artifact sourceJar
+                artifact packageJavadoc
+
+                groupId publication.pomGroupID + '.messaging'
+                artifactId "api"
+                version publication.pomMessagingVersion
+
+                pom {
+                    name = "messaging:api"
+                    description = 'messaging libray serves to connect native apk with smartapp backend'
+                    url = publication.githubUrl
+                    licenses {
+                        license {
+                            name = publication.licenseName
+                            url = publication.licenseUrl
+                        }
+                    }
+                    developers {
+                        developer {
+                            name = 'Igor Perminov'
+                            email = 'Perminov.I.Yurye@sberbank.ru'
+                        }
+                        developer {
+                            name = 'Nikolay Pahomov'
+                            email = 'NMPakhomov@sberbank.ru'
+                        }
+                    }
+                    scm {
+                        connection = publication.connectionUrl
+                        developerConnection = publication.connectionUrl
+                        url = publication.githubUrl
+                    }
+                }
+            }
+        }
+    }
+
+    signing {
+        sign publishing.publications.mavenMesagingApi
+    }
+}
