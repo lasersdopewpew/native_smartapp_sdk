@@ -4,6 +4,17 @@ on:
   release:
     types: [created]
   workflow_dispatch:
+    inputs:
+        logLevel:
+          description: 'What lib to publish?'     
+          required: true
+          default: 'warning' 
+          type: choice
+          options:
+          - AppState
+          - Messsaging
+          - CV
+          - common
 
 jobs:
   build:
