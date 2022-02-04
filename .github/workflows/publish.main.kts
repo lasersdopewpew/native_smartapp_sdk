@@ -2,7 +2,7 @@
 
 val argLib = args.firstOrNull()
 
-val publishCommand = when (argLib) {
+val publishCommand = when (argLib?.lowercase()) {
     "asserts" -> "public:common:asserts:publish"
     "binderhelper" -> "public:common:binderhelper:api:publish public:common:binderhelper:impl:publish"
     "camera" -> "public:common:camera:publish"
